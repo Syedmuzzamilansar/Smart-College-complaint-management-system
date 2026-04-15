@@ -2033,16 +2033,20 @@ def get_db():
             'Database URL is missing. Set DATABASE_URL '
             '(or POSTGRES_URL/POSTGRESQL_URL) and restart.'
         )
-    retries = 1
+    # Render free-tier PostgreSQL can take up to 30s to wake from sleep.
+    # Retry 4 times with increasing backoff before giving up.
+    MAX_RETRIES = 4
+    BACKOFF = [0.5, 1.5, 3.0, 5.0]
     last_error = None
-    for attempt in range(retries + 1):
+    for attempt in range(MAX_RETRIES):
         try:
-            return psycopg2.connect(db_url, connect_timeout=10)
+            conn = psycopg2.connect(db_url, connect_timeout=15)
+            return conn
         except psycopg2.OperationalError as e:
             last_error = e
-            if attempt < retries:
-                time.sleep(0.35)
-                continue
+            wait = BACKOFF[attempt] if attempt < len(BACKOFF) else 5.0
+            print(f'[DB] Connection attempt {attempt + 1}/{MAX_RETRIES} failed: {e}. Retrying in {wait}s...')
+            time.sleep(wait)
 
     raise RuntimeError(
         f"Database connection failed for host '{_db_host_from_url(db_url)}'. "
