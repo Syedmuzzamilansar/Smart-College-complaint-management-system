@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="error-card">
+    <span class="error-code">{{ code }}</span>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <div class="error-actions">
+      <a href="{{ url_for('index') }}" class="btn-primary"><i class="fas fa-home"></i> Back to Home</a>
+      <a href="{{ url_for('login') }}" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

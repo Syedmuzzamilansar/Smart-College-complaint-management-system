@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Track Complaint{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fas fa-search"></i> Track Your Complaint</h1>
+  <p>Enter your tracking code to check the status of your anonymous complaint.</p>
+</div>
+
+<div class="form-card track-card">
+  <form method="POST" class="track-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+    <div class="form-group">
+      <label><i class="fas fa-hashtag"></i> Tracking Code</label>
+      <div class="track-input-group">
+        <input type="text" name="tracking_code" placeholder="Enter your tracking code (e.g., A1B2C3D4E5F6)" 
+               required maxlength="12" style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700;"/>
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-search"></i> Track
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% if complaint %}
+<div class="track-result">
+  <div class="track-result-header">
+    <h3><i class="fas fa-clipboard-check"></i> Complaint Found</h3>
+    <span class="status-badge status-{{ complaint.status.lower().replace('-', '') }}">
+      <i class="fas {% if complaint.status == 'Resolved' %}fa-check-circle{% elif complaint.status == 'In-Progress' %}fa-spinner fa-spin{% else %}fa-clock{% endif %}"></i>
+      {{ complaint.status }}
+    </span>
+  </div>
+
+  <div class="track-details">
+    <div class="track-detail-row">
+      <span class="detail-label"><i class="fas fa-tag"></i> Category</span>
+      <span class="category-badge">{{ complaint.category }}</span>
+    </div>
+    <div class="track-detail-row">
+      <span class="detail-label"><i class="fas fa-exclamation-triangle"></i> Priority</span>
+      <span class="priority-tag priority-{{ complaint.priority.lower() }}">{{ complaint.priority }}</span>
+    </div>
+    <div class="track-detail-row">
+      <span class="detail-label"><i class="fas fa-calendar"></i> Submitted</span>
+      <span>{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+    </div>
+    <div class="track-detail-row full-width">
+      <span class="detail-label"><i class="fas fa-align-left"></i> Description</span>
+      <p class="track-description">{{ complaint.description }}</p>
+    </div>
+    {% if complaint.assigned_to %}
+    <div class="track-detail-row">
+      <span class="detail-label"><i class="fas fa-user-tie"></i> Assigned To</span>
+      <span>{{ complaint.assigned_to }}</span>
+    </div>
+    {% endif %}
+    {% if complaint.response %}
+    <div class="track-detail-row full-width">
+      <span class="detail-label"><i class="fas fa-comment-dots"></i> QQGPT Response</span>
+      <div class="admin-response">{{ complaint.response }}</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

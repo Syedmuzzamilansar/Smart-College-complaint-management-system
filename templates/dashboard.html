@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1><i class="fas fa-tachometer-alt"></i> My Dashboard</h1>
+  <p>Welcome, <strong>{{ session.get('user_name') }}</strong>! Track all your submitted complaints below.</p>
+  <a href="{{ url_for('submit') }}" class="btn-primary">
+    <i class="fas fa-plus"></i> New Complaint
+  </a>
+</div>
+
+<!-- STATS CARDS -->
+<div class="stats-grid">
+  <div class="stat-card total">
+    <i class="fas fa-clipboard-list"></i>
+    <div><span class="stat-num">{{ stats.total }}</span><span class="stat-label">Total</span></div>
+  </div>
+  <div class="stat-card pending">
+    <i class="fas fa-clock"></i>
+    <div><span class="stat-num">{{ stats.pending }}</span><span class="stat-label">Pending</span></div>
+  </div>
+  <div class="stat-card inprogress">
+    <i class="fas fa-spinner"></i>
+    <div><span class="stat-num">{{ stats.inprogress }}</span><span class="stat-label">In-Progress</span></div>
+  </div>
+  <div class="stat-card resolved">
+    <i class="fas fa-check-circle"></i>
+    <div><span class="stat-num">{{ stats.resolved }}</span><span class="stat-label">Resolved</span></div>
+  </div>
+</div>
+
+<!-- COMPLAINTS LIST -->
+{% if complaints %}
+  <div class="complaints-list">
+    {% for c in complaints %}
+    <div class="complaint-card priority-border-{{ c.priority.lower() }}">
+      <div class="card-header">
+        <div class="card-meta">
+          <span class="category-badge"><i class="fas fa-tag"></i> {{ c.category }}</span>
+          <span class="priority-tag priority-{{ c.priority.lower() }}">
+            <i class="fas {% if c.priority == 'High' %}fa-arrow-up{% elif c.priority == 'Medium' %}fa-minus{% else %}fa-arrow-down{% endif %}"></i>
+            {{ c.priority }}
+          </span>
+        </div>
+        <span class="status-badge status-{{ c.status.lower().replace('-', '') }}">
+          <i class="fas {% if c.status == 'Resolved' %}fa-check-circle{% elif c.status == 'In-Progress' %}fa-spinner fa-spin{% else %}fa-clock{% endif %}"></i>
+          {{ c.status }}
+        </span>
+      </div>
+
+      <p class="complaint-desc">{{ c.description }}</p>
+
+      <div class="card-footer">
+        <span class="date-info"><i class="fas fa-calendar"></i> {{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        {% if c.assigned_to %}
+          <span class="assigned-info"><i class="fas fa-user-tie"></i> Assigned: {{ c.assigned_to }}</span>
+        {% endif %}
+        {% if c.response %}
+          <div class="admin-response">
+            <i class="fas fa-comment-dots"></i>
+            <strong>QQGPT Response:</strong> {{ c.response }}
+          </div>
+        {% endif %}
+        {% if c.status == 'Pending' %}
+        <div class="card-actions">
+          <a href="{{ url_for('edit_complaint', complaint_id=c.id) }}" class="btn-edit">
+            <i class="fas fa-edit"></i> Edit
+          </a>
+          <form method="POST" action="{{ url_for('delete_complaint', complaint_id=c.id) }}"
+                onsubmit="return confirm('Delete this complaint?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+            <button type="submit" class="btn-delete">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </form>
+        </div>
+        {% elif c.status == 'Resolved' %}
+        <div class="card-actions">
+          <a href="/feedback/{{ c.id }}" class="btn-edit">
+            <i class="fas fa-star"></i> Rate Resolution
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <h3>No complaints yet</h3>
+    <p>You haven't submitted any complaints. Click the button below to get started.</p>
+    <a href="{{ url_for('submit') }}" class="btn-primary">
+      <i class="fas fa-plus"></i> Submit First Complaint
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<!-- Back Button -->
+<div class="back-button-wrapper">
+  <a href="{{ url_for('index') }}" class="back-button js-back-link" data-fallback="{{ url_for('index') }}" aria-label="Go back">
+    <i class="fas fa-arrow-left"></i>
+    <span>Back</span>
+  </a>
+</div>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon">
+        <img src="{{ url_for('static', filename='images/qqgpt-logo.jpeg') }}" alt="QQGPT" class="auth-logo-img"/>
+      </div>
+      <h2>QQGPT — Create Account</h2>
+      <p>Register to submit and track complaints</p>
+    </div>
+    {% if request.args.get('reason') == 'not_found' %}
+    <div class="auth-login-error">
+      <i class="fas fa-user-plus"></i> Account not found. Please register first.
+    </div>
+    {% endif %}
+    <form method="POST" action="{{ url_for('register') }}" class="auth-form" id="registerForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+      <div class="form-group">
+        <label><i class="fas fa-user"></i> Full Name</label>
+        <input type="text" name="name" placeholder="Your full name" required minlength="3" value="{{ request.form.get('name', '') }}"/>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email Address</label>
+        <input type="email" name="email" placeholder="your@email.com" required value="{{ request.form.get('email') or request.args.get('email', '') }}"/>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <div class="input-group">
+          <input type="password" name="password" id="regPassword" placeholder="Min. 8 characters, with letters and numbers" required minlength="8"/>
+          <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Confirm Password</label>
+        <div class="input-group">
+          <input type="password" name="confirm_password" id="regConfirm" placeholder="Repeat password" required/>
+          <button type="button" class="toggle-password" onclick="togglePassword('regConfirm', this)">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <small class="password-match" id="matchMsg"></small>
+      </div>
+      <button type="submit" class="btn-primary btn-block">
+        <i class="fas fa-user-check"></i> Create Account
+      </button>
+    </form>
+    <div class="auth-footer">
+      <p>Already registered? <a href="{{ url_for('login') }}">Login here</a></p>
+      <p>Want to rate this website? <a href="{{ url_for('public_feedback') }}">Give feedback</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

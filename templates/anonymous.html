@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Anonymous Complaint{% endblock %}
+{% block content %}
+<!-- Back Button -->
+<div class="back-button-wrapper">
+  <a href="{{ url_for('index') }}" class="back-button js-back-link" data-fallback="{{ url_for('index') }}" aria-label="Go back">
+    <i class="fas fa-arrow-left"></i>
+    <span>Back</span>
+  </a>
+</div>
+
+<div class="page-header">
+  <h1><i class="fas fa-user-secret"></i> Anonymous Complaint</h1>
+  <p>Your identity will remain completely confidential. No personal information is required.</p>
+  <p><a href="{{ url_for('public_feedback') }}"><i class="fas fa-star"></i> Share website feedback</a></p>
+</div>
+
+{% if submitted and tracking_code %}
+<div class="success-card">
+  <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+  <h2>Complaint Submitted Successfully!</h2>
+  <p>Your anonymous complaint has been registered. Save your tracking code to check the status later.</p>
+  <div class="tracking-display">
+    <label>Your Tracking Code</label>
+    <div class="tracking-code-box">
+      <span id="trackCode">{{ tracking_code }}</span>
+      <button type="button" class="btn-copy" onclick="copyTrackingCode()">
+        <i class="fas fa-copy"></i> Copy
+      </button>
+    </div>
+    <small><i class="fas fa-exclamation-triangle"></i> Save this code — you won't be able to recover it later.</small>
+  </div>
+  <div class="success-actions">
+    <a href="{{ url_for('anonymous_submit') }}" class="btn-secondary">
+      <i class="fas fa-plus"></i> Submit Another
+    </a>
+    <a href="{{ url_for('track_complaint') }}" class="btn-primary">
+      <i class="fas fa-search"></i> Track Complaint
+    </a>
+  </div>
+</div>
+{% else %}
+<div class="anon-notice">
+  <i class="fas fa-shield-alt"></i>
+  <div>
+    <strong>Your Privacy is Protected</strong>
+    <p>This complaint will be submitted without any identifying information. You will receive a tracking code to check the status of your complaint.</p>
+  </div>
+</div>
+
+<div class="form-card">
+  <form method="POST" class="complaint-form" id="complaintForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label><i class="fas fa-tag"></i> Complaint Category <span class="required">*</span></label>
+        <select name="category" required>
+          <option value="" disabled selected>Select category...</option>
+          {% set cats = ['Classroom', 'Computer Laboratory', 'Men Washroom', 'Women Washroom', 'Drinking Water', 'Library', 'Sports Facility', 'Other'] %}
+          {% for cat in cats %}
+            <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-exclamation-triangle"></i> Priority Level <span class="required">*</span></label>
+        <div class="priority-group">
+          {% for p in ['Low', 'Medium', 'High'] %}
+          <label class="priority-option priority-{{ p.lower() }}">
+            <input type="radio" name="priority" value="{{ p }}"
+              {% if p == 'Medium' %}checked{% endif %}/>
+            <span>
+              <i class="fas {% if p == 'Low' %}fa-arrow-down{% elif p == 'Medium' %}fa-minus{% else %}fa-arrow-up{% endif %}"></i>
+              {{ p }}
+            </span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label><i class="fas fa-align-left"></i> Complaint Description <span class="required">*</span></label>
+      <textarea name="description" rows="6" placeholder="Describe the issue in detail — what happened, where, and when (for classroom issues, mention LH-1 to LH-13)." required minlength="20"></textarea>
+      <div class="ai-suggest-tools">
+        <button type="button" class="btn-secondary ai-suggest-btn" id="aiSuggestBtn">
+          <i class="fas fa-wand-magic-sparkles"></i> AI Write Suggestion
+        </button>
+        <small id="aiSuggestStatus" class="ai-suggest-status">Write your issue in simple words, then use AI to polish it.</small>
+      </div>
+      <small class="char-count" id="charCount">0 / 500 characters</small>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('login') }}" class="btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Login
+      </a>
+      <button type="submit" class="btn-primary">
+        <i class="fas fa-paper-plane"></i> Submit Anonymously
+      </button>
+    </div>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

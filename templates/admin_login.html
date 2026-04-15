@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Admin Login{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card auth-card--admin">
+    <div class="auth-header">
+      <div class="auth-icon">
+        <img src="{{ url_for('static', filename='images/qqgpt-logo.jpeg') }}" alt="QQGPT" class="auth-logo-img"/>
+      </div>
+      <h2>QQGPT — Admin Login</h2>
+      <p>Authorized staff only. Students should use the Student Login page.</p>
+    </div>
+
+    <div class="admin-warning-banner">
+      <i class="fas fa-triangle-exclamation"></i>
+      This portal is not for students.
+    </div>
+
+    {% if login_error %}
+    <div class="auth-login-error">
+      <i class="fas fa-exclamation-circle"></i> {{ login_error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+      <input type="hidden" name="login_context" value="admin"/>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Staff Email Address</label>
+        <input type="email" name="email" placeholder="admin@college.edu" required autocomplete="email" value="{{ login_email or request.form.get('email', '') }}"/>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <div class="input-group">
+          <input type="password" name="password" id="adminLoginPassword" placeholder="••••••••" required/>
+          <button type="button" class="toggle-password" onclick="togglePassword('adminLoginPassword', this)">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary btn-block">
+        <i class="fas fa-user-shield"></i> Admin Login
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Students should use the <a href="{{ url_for('login') }}">Student Login</a>.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

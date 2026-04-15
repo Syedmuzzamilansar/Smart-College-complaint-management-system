@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Summary — QQGPT Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-size: 1.5rem; font-weight: 600; color: #f1f5f9; }
+    .back-btn { padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: #94a3b8; font-size: 13px; text-decoration: none; }
+    .back-btn:hover { background: rgba(255,255,255,0.12); color: #f1f5f9; }
+    .stats { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; margin-bottom: 1rem; }
+    .stat { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; }
+    .stat h4 { font-size: 12px; color:#94a3b8; margin-bottom: 6px; }
+    .stat strong { font-size: 1.5rem; color: #f8fafc; }
+    .avg-card { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.1)); border: 1px solid rgba(16,185,129,0.3); border-radius: 16px; padding: 1rem 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
+    .avg-score { font-size: 2.4rem; font-weight: 700; color: #10b981; }
+    .avg-title { font-size: 14px; color: #f1f5f9; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1rem; overflow-x: auto; margin-bottom: 1rem; }
+    .card h3 { font-size: 1rem; margin-bottom: .8rem; color: #e2e8f0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 10px 12px; color: #94a3b8; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cbd5e1; vertical-align: top; }
+    .stars { color: #fbbf24; }
+    .chip { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: rgba(59,130,246,.2); color:#93c5fd; }
+    .chip-public { background: rgba(16,185,129,.2); color:#6ee7b7; }
+    .chip-private { background: rgba(148,163,184,.18); color:#cbd5e1; }
+    .empty { text-align: center; padding: 2rem; color: #64748b; font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <div class="page-title">Feedback Summary</div>
+    <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
+  </div>
+
+  <div class="avg-card">
+    <div class="avg-score">{{ avg_rating }}</div>
+    <div class="avg-title">Overall Combined Rating (Student + Public)</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><h4>Student Feedback Entries</h4><strong>{{ feedbacks|length }}</strong></div>
+    <div class="stat"><h4>Public Feedback Entries</h4><strong>{{ public_feedbacks|length }}</strong></div>
+    <div class="stat"><h4>Publicly Visible (Consented)</h4><strong>{{ public_visible_count }}</strong></div>
+  </div>
+
+  <div class="card">
+    <h3>Student Complaint Feedback</h3>
+    {% if feedbacks %}
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Complaint</th>
+          <th>Category</th>
+          <th>Rating</th>
+          <th>Comment</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fb in feedbacks %}
+        <tr>
+          <td>{{ fb.student_name }}</td>
+          <td>#{{ fb.complaint_id }}</td>
+          <td>{{ fb.category }}</td>
+          <td class="stars">{% for i in range(fb.rating) %}★{% endfor %}{% for i in range(5 - fb.rating) %}☆{% endfor %} ({{ fb.rating }}/5)</td>
+          <td>{{ fb.comment or '—' }}</td>
+          <td>{{ fb.created_at.strftime('%d %b %Y') if fb.created_at else 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <div class="empty">No student complaint feedback yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Public Feedback (Temporary / Guest Users)</h3>
+    {% if public_feedbacks %}
+    <table>
+      <thead>
+        <tr>
+          <th>Feedback ID</th>
+          <th>Name</th>
+          <th>Q1</th>
+          <th>Q2</th>
+          <th>Q3</th>
+          <th>Overall</th>
+          <th>Visibility</th>
+          <th>Comment</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fb in public_feedbacks %}
+        <tr>
+          <td><span class="chip">{{ fb.feedback_id }}</span></td>
+          <td>{{ fb.visitor_name }}</td>
+          <td>{{ fb.q1_experience }}</td>
+          <td>{{ fb.q2_filing }}</td>
+          <td>{{ fb.q3_registration }}</td>
+          <td class="stars">{{ fb.overall_rating }}/5</td>
+          <td>
+            {% if fb.display_public %}
+              <span class="chip chip-public">Public</span>
+            {% else %}
+              <span class="chip chip-private">Private</span>
+            {% endif %}
+          </td>
+          <td>{{ fb.feedback_text or '—' }}</td>
+          <td>{{ fb.created_at.strftime('%d %b %Y') if fb.created_at else 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <div class="empty">No public feedback entries yet.</div>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Home — QQGPT Smart CMS{% endblock %}
+{% block content %}
+
+<div class="homepage-hero">
+  <div class="hero-content">
+    <div class="hero-icon">
+      <i class="fas fa-home"></i>
+    </div>
+    <h1>Welcome to Smart CMS</h1>
+    <p>Quli Qutub Shah Government Polytechnic</p>
+    <div class="hero-buttons">
+      {% if session.get('user_id') %}
+        {% if session.get('role') == 'admin' %}
+          <a href="{{ url_for('admin_dashboard') }}" class="btn-primary">
+            <i class="fas fa-tachometer-alt"></i> Admin Panel
+          </a>
+        {% else %}
+          <a href="{{ url_for('dashboard') }}" class="btn-primary">
+            <i class="fas fa-chart-bar"></i> Dashboard
+          </a>
+          <a href="{{ url_for('submit') }}" class="btn-secondary">
+            <i class="fas fa-plus-circle"></i> Submit Complaint
+          </a>
+        {% endif %}
+      {% else %}
+        <a href="{{ url_for('login', focus='login') }}" class="btn-primary">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </a>
+        <a href="{{ url_for('register') }}" class="btn-secondary">
+          <i class="fas fa-user-plus"></i> Register
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- NOTICES SECTION -->
+<section class="notices-section">
+  <div class="section-header">
+    <div class="section-title-row">
+      <h2><i class="fas fa-bullhorn"></i> Latest Notices</h2>
+      <a href="{{ url_for('view_notices') }}" class="section-admin-badge">
+        <i class="fas fa-list"></i> View All Notices
+      </a>
+    </div>
+    <p>Important announcements and college updates</p>
+  </div>
+
+  {% if notices %}
+    <div class="notices-grid">
+      {% for notice in notices %}
+      <div class="notice-card">
+        <div class="notice-header">
+          <span class="notice-badge">Official</span>
+          <span class="notice-date">{{ notice.created_at.strftime('%d %b %Y') if notice.created_at else 'N/A' }}</span>
+        </div>
+        <h3 class="notice-title">{{ notice.title }}</h3>
+        <p class="notice-body">{{ notice.body[:200] }}{% if notice.body|length > 200 %}<span>...</span>{% endif %}</p>
+        <div class="notice-meta">
+          <i class="fas fa-clock"></i> Posted on {{ notice.created_at.strftime('%I:%M %p') if notice.created_at else 'N/A' }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="empty-notices">
+      <div class="empty-icon">
+        <i class="fas fa-newspaper"></i>
+      </div>
+      <p>No notices posted yet. Check back soon!</p>
+    </div>
+  {% endif %}
+</section>
+
+<!-- QUICK LINKS SECTION -->
+<section class="quick-links-section">
+  <h2>Quick Links</h2>
+  <div class="quick-links-grid">
+    <a href="{{ url_for('anonymous_submit') }}" class="quick-link-card">
+      <i class="fas fa-mask"></i>
+      <h3>Submit Anonymously</h3>
+      <p>File a complaint without creating an account</p>
+    </a>
+    <a href="{{ url_for('track_complaint') }}" class="quick-link-card">
+      <i class="fas fa-magnifying-glass"></i>
+      <h3>Track Complaint</h3>
+      <p>Check the status of your anonymous complaint</p>
+    </a>
+    <a href="{{ url_for('public_feedback') }}" class="quick-link-card">
+      <i class="fas fa-star"></i>
+      <h3>Give Feedback</h3>
+      <p>Share your experience with the system</p>
+    </a>
+    {% if not session.get('user_id') %}
+    <a href="{{ url_for('register') }}" class="quick-link-card">
+      <i class="fas fa-user-plus"></i>
+      <h3>Create Account</h3>
+      <p>Register to track your complaints</p>
+    </a>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .homepage-hero {
+    background: linear-gradient(135deg, #0b1328 0%, #0f172a 52%, #14213d 100%);
+    color: #fff;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 16px;
+    margin-bottom: 3rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+  .hero-content { max-width: 600px; margin: 0 auto; }
+  .hero-icon { font-size: 4rem; margin-bottom: 1rem; }
+  .homepage-hero h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+  .homepage-hero p { font-size: 1rem; color: rgba(255,255,255,0.8); margin-bottom: 1.5rem; }
+  .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .hero-buttons .btn-primary, .hero-buttons .btn-secondary { padding: 12px 24px; font-size: 1rem; }
+
+  .notices-section { margin: 3rem 0; }
+  .section-header { text-align: center; margin-bottom: 2rem; }
+  .section-header h2 { font-size: 1.8rem; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 0.5rem; }
+  .section-header h2 i { color: var(--accent); font-size: 2rem; }
+  .section-header p { color: var(--gray-500); }
+
+  .notices-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+  .notice-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); transition: all 0.3s ease; cursor: pointer; }
+  .notice-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+  .notice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+  .notice-badge { background: linear-gradient(135deg, var(--accent) 0%, #0a9396 100%); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+  .notice-date { font-size: 0.85rem; color: var(--gray-500); }
+  .notice-title { font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 700; }
+  .notice-body { color: var(--gray-600); line-height: 1.6; margin-bottom: 1rem; }
+  .notice-meta { font-size: 0.85rem; color: var(--gray-500); }
+
+  .view-all-notices { text-align: center; }
+  .empty-notices { text-align: center; padding: 3rem 2rem; color: var(--gray-500); }
+  .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+
+  .quick-links-section { margin-top: 4rem; }
+  .quick-links-section h2 { font-size: 1.8rem; color: var(--primary); text-align: center; margin-bottom: 2rem; }
+  .quick-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+  .quick-link-card { background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%); border: 1px solid #d1e7f0; border-radius: 12px; padding: 1.5rem; text-align: center; text-decoration: none; color: var(--primary); transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,137,123,0.08); }
+  .quick-link-card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,137,123,0.15); border-color: var(--accent); }
+  .quick-link-card i { font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem; }
+  .quick-link-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .quick-link-card p { font-size: 0.9rem; color: var(--gray-600); }
+
+  @media (max-width: 768px) {
+    .homepage-hero { padding: 2rem 1rem; }
+    .homepage-hero h1 { font-size: 1.6rem; }
+    .hero-buttons { gap: 0.5rem; }
+    .hero-buttons .btn-primary, .hero-buttons .btn-secondary { padding: 10px 16px; font-size: 0.9rem; width: 100%; }
+    .section-header h2 { font-size: 1.5rem; }
+    .notices-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% endblock %}

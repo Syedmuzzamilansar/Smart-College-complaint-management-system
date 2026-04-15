@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Notices — QQGPT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-size: 1.4rem; font-weight: 600; color: #f1f5f9; }
+    .back-btn { padding: 8px 18px; border-radius: 8px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: #94a3b8; font-size: 13px; text-decoration: none; transition: all .2s; }
+    .back-btn:hover { background: rgba(255,255,255,0.13); color: #f1f5f9; }
+    .badge { display: inline-block; padding: 2px 9px; background: rgba(59,130,246,0.2); border-radius: 4px; color: #93c5fd; font-size: 11px; font-weight: 500; margin-right: 6px; }
+    .notice-item { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid #3b82f6; border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; transition: border-left-color .2s; }
+    .notice-item:hover { border-left-color: #60a5fa; }
+    .notice-title { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 8px; }
+    .notice-body { font-size: 13px; color: #94a3b8; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+    .notice-date { font-size: 11px; color: #64748b; margin-top: 10px; }
+    .empty-state { text-align: center; padding: 4rem 2rem; }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-title { font-size: 15px; color: #64748b; }
+    .empty-sub { font-size: 13px; color: #475569; margin-top: 6px; }
+    .count-line { font-size: 12px; color: #64748b; margin-bottom: 1.2rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <div class="page-title">📢 College Notices</div>
+    <a href="{{ url_for('dashboard') }}" class="back-btn">← Back to Dashboard</a>
+  </div>
+
+  {% if notices %}
+    <div class="count-line">{{ notices | length }} notice(s) — latest first</div>
+    {% for notice in notices %}
+    <div class="notice-item">
+      <div class="notice-title">
+        <span class="badge">Official</span>{{ notice.title }}
+      </div>
+      <div class="notice-body">{{ notice.body }}</div>
+      <div class="notice-date">
+        📅 Posted on {{ notice.created_at.strftime('%d %B %Y at %I:%M %p') if notice.created_at else 'N/A' }}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">No notices posted yet</div>
+      <div class="empty-sub">Check back later — the admin will post notices here.</div>
+    </div>
+  {% endif %}
+
+</div>
+</body>
+</html>

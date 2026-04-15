@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+{% block title %}Welcome — QQGPT Smart CMS{% endblock %}
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+  <div class="hero-overlay"></div>
+  <img src="{{ url_for('static', filename='images/college-building.jpg') }}" alt="QQGPT College Building" class="hero-bg-img"/>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <img src="{{ url_for('static', filename='images/qqgpt-logo.jpeg') }}" alt="QQGPT Logo" class="hero-logo"/>
+    </div>
+    <h1>Quli Qutub Shah Government Polytechnic</h1>
+    <p class="hero-subtitle">Chandulal Baradari, Near Zoo Park, Old City, Hyderabad, Telangana</p>
+    <div class="hero-tags">
+      <span class="hero-tag"><i class="fas fa-calendar-alt"></i> Est. 1985</span>
+      <span class="hero-tag"><i class="fas fa-certificate"></i> AICTE Approved</span>
+      <span class="hero-tag"><i class="fas fa-university"></i> Affiliated to SBTET</span>
+      <span class="hero-tag"><i class="fas fa-id-badge"></i> AICTE ID: 1-465653531</span>
+    </div>
+    <a href="#login-section" class="hero-cta"><i class="fas fa-sign-in-alt"></i> Login to CMS Portal</a>
+  </div>
+</section>
+
+<!-- NOTICES SECTION -->
+<section class="landing-section alt-bg" id="announcements-section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <div class="section-title-row">
+        <h2><i class="fas fa-bullhorn"></i> Announcements</h2>
+        <a href="{{ url_for('view_notices') }}" class="section-admin-badge">
+          <i class="fas fa-list"></i> View All Notices
+        </a>
+      </div>
+      <p class="section-subtitle">Official updates from the college displayed openly on the homepage</p>
+    </div>
+  </div>
+  
+  <div class="notices-grid">
+    {% for notice in notices %}
+    <div class="notice-card">
+      <div class="notice-header">
+        <span class="notice-badge">Official</span>
+        <span class="notice-date">{{ notice.created_at.strftime('%d %b %Y') if notice.created_at else 'N/A' }}</span>
+      </div>
+      <h3 class="notice-title">{{ notice.title }}</h3>
+      <p class="notice-body">{{ notice.body[:200] }}{% if notice.body|length > 200 %}<span>...</span>{% endif %}</p>
+      <div class="notice-meta">
+        <i class="fas fa-clock"></i> Posted on {{ notice.created_at.strftime('%I:%M %p') if notice.created_at else 'N/A' }}
+      </div>
+    </div>
+    {% endfor %}
+    {% if not notices %}
+    <div class="notice-card">
+      <div class="notice-header">
+        <span class="notice-badge">Updates</span>
+        <span class="notice-date">N/A</span>
+      </div>
+      <h3 class="notice-title">No announcements posted yet</h3>
+      <p class="notice-body">New notices from the college will appear here as soon as they are published.</p>
+      <div class="notice-meta">
+        <i class="fas fa-circle-info"></i> Check back soon
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section class="landing-section" id="about-section">
+  <div class="section-header reveal">
+    <span class="section-number">01</span>
+    <div class="section-header-text">
+      <h2>About the College</h2>
+      <p class="section-subtitle">Established in 1985 &bull; Government of Telangana</p>
+    </div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal-left">
+      <p>
+        <strong>Quli Qutub Shah Government Polytechnic</strong> was established by
+        <em>G.O. Ms No. 255</em> on <strong>10th July 1985</strong>. It was initially started with
+        three branches — DCE, DME and DECE — with an intake of 40 each and was located in a
+        private building at Jahanuma. It was subsequently shifted to another private building at
+        Chandrayangutta. Later on <strong>20th November 1992</strong>, it was shifted to its permanent
+        building at <strong>Chandulal Baradari, Near Zoo Park, Old City, Hyderabad</strong>.
+      </p>
+    </div>
+    <div class="about-stats">
+      <div class="about-stat-item reveal-scale stagger-1">
+        <div class="stat-icon-ring"><i class="fas fa-graduation-cap"></i></div>
+        <div>
+          <strong data-count="6">0</strong>
+          <span>Departments</span>
+        </div>
+      </div>
+      <div class="about-stat-item reveal-scale stagger-2">
+        <div class="stat-icon-ring"><i class="fas fa-calendar-check"></i></div>
+        <div>
+          <strong data-count="1985">0</strong>
+          <span>Established</span>
+        </div>
+      </div>
+      <div class="about-stat-item reveal-scale stagger-3">
+        <div class="stat-icon-ring"><i class="fas fa-building"></i></div>
+        <div>
+          <strong data-count="Govt.">Govt.</strong>
+          <span>Institution</span>
+        </div>
+      </div>
+      <div class="about-stat-item reveal-scale stagger-4">
+        <div class="stat-icon-ring"><i class="fas fa-award"></i></div>
+        <div>
+          <strong data-count="AICTE">AICTE</strong>
+          <span>Approved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPARTMENTS -->
+<section class="landing-section alt-bg">
+  <div class="section-header reveal">
+    <span class="section-number">02</span>
+    <div class="section-header-text">
+      <h2>Departments Offered</h2>
+      <p class="section-subtitle">6 Diploma programmes &bull; AICTE Approved</p>
+    </div>
+  </div>
+  <div class="dept-grid">
+    <div class="dept-card reveal-scale stagger-1">
+      <i class="fas fa-desktop"></i>
+      <h3>Computer Engineering</h3>
+      <span>DCME</span>
+    </div>
+    <div class="dept-card reveal-scale stagger-2">
+      <i class="fas fa-cogs"></i>
+      <h3>Mechanical Engineering</h3>
+      <span>DME</span>
+    </div>
+    <div class="dept-card reveal-scale stagger-3">
+      <i class="fas fa-bolt"></i>
+      <h3>Electrical &amp; Electronics</h3>
+      <span>DEEE</span>
+    </div>
+    <div class="dept-card reveal-scale stagger-4">
+      <i class="fas fa-mobile-alt"></i>
+      <h3>Electronics Engineering</h3>
+      <span>DECE</span>
+    </div>
+    <div class="dept-card reveal-scale stagger-5">
+      <i class="fas fa-hard-hat"></i>
+      <h3>Civil Engineering</h3>
+      <span>DCE</span>
+    </div>
+    <div class="dept-card reveal-scale stagger-6">
+      <i class="fas fa-print"></i>
+      <h3>Printing Technology</h3>
+      <span>DPT</span>
+    </div>
+  </div>
+</section>
+
+<!-- VISION & MISSION -->
+<section class="landing-section">
+  <div class="section-header reveal">
+    <span class="section-number">03</span>
+    <div class="section-header-text">
+      <h2>Vision &amp; Mission</h2>
+      <p class="section-subtitle">Our guiding principles &bull; Building the future</p>
+    </div>
+  </div>
+  <div class="vm-grid">
+    <div class="vm-card vision reveal-left">
+      <div class="vm-icon"><i class="fas fa-eye"></i></div>
+      <h3>Our Vision</h3>
+      <p>To empower and produce skilled and competent individuals with good personal attributes from Old City in Hyderabad of Telangana State by imparting required knowledge and skills to meet the global proficiency.</p>
+    </div>
+    <div class="vm-card mission reveal-right">
+      <div class="vm-icon"><i class="fas fa-rocket"></i></div>
+      <h3>Our Mission</h3>
+      <ul>
+        <li>To create conducive learning environment for trending interactive teaching-learning process.</li>
+        <li>To inculcate updated practical-oriented learning through the interaction of industry-institute to meet the needs of the industries.</li>
+        <li>To produce technically skilled individuals with professionalism, responsibility and ethical values.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PRINCIPAL SECTION -->
+<section class="landing-section alt-bg">
+  <div class="section-header reveal">
+    <span class="section-number">04</span>
+    <div class="section-header-text">
+      <h2>From the Principal's Desk</h2>
+      <p class="section-subtitle">Leadership &bull; Academic Excellence</p>
+    </div>
+  </div>
+  <div class="principal-card reveal-left">
+    <div class="principal-avatar">
+      <div class="avatar-ring">
+        <span class="avatar-initials">PP</span>
+      </div>
+    </div>
+    <div class="principal-info">
+      <h3>Smt. P. Parameshwari</h3>
+      <span class="principal-title">Principal, QQGPT Hyderabad</span>
+      <div class="principal-quote">
+        <i class="fas fa-quote-left quote-icon"></i>
+        <p>
+          An able administrator and leader of excellence in education, she started her career as
+          Principal in the Department of Technical Education in 2019 and joined this Institute in July 2024.
+          She values growth and development, sets core values that move students toward academic
+          achievement, and maintains a positive and constructive approach with parents, students, staff
+          and all stakeholders.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK LINKS -->
+<section class="landing-section">
+  <div class="section-header reveal">
+    <span class="section-number">05</span>
+    <div class="section-header-text">
+      <h2>Quick Links</h2>
+      <p class="section-subtitle">Important resources &bull; External portals</p>
+    </div>
+  </div>
+  <div class="quick-links-grid">
+    <a href="https://qqgpthyd.dte.telangana.gov.in/" target="_blank" rel="noopener noreferrer" class="quick-link-card reveal-scale stagger-1">
+      <div class="ql-icon-wrap">
+        <svg class="ql-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <span>College Website</span>
+      <small class="ql-url">qqgpthyd.dte.telangana.gov.in</small>
+      <i class="fas fa-arrow-right ql-arrow"></i>
+    </a>
+    <a href="https://sbtet.telangana.gov.in" target="_blank" rel="noopener noreferrer" class="quick-link-card reveal-scale stagger-2">
+      <div class="ql-icon-wrap">
+        <svg class="ql-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <line x1="12" y1="6" x2="12" y2="18"/>
+        </svg>
+      </div>
+      <span>SBTET Results &amp; Exams</span>
+      <small class="ql-url">sbtet.telangana.gov.in</small>
+      <i class="fas fa-arrow-right ql-arrow"></i>
+    </a>
+    <a href="https://polycet.sbtet.telangana.gov.in" target="_blank" rel="noopener noreferrer" class="quick-link-card reveal-scale stagger-3">
+      <div class="ql-icon-wrap">
+        <svg class="ql-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/><circle cx="10" cy="15" r="2"/><path d="M19 17.5A2.5 2.5 0 1 1 14 15"/>
+        </svg>
+      </div>
+      <span>POLYCET Admissions</span>
+      <small class="ql-url">polycet.sbtet.telangana.gov.in</small>
+      <i class="fas fa-arrow-right ql-arrow"></i>
+    </a>
+    <a href="https://swayam.gov.in" target="_blank" rel="noopener noreferrer" class="quick-link-card reveal-scale stagger-4">
+      <div class="ql-icon-wrap">
+        <svg class="ql-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <span>SWAYAM Online Courses</span>
+      <small class="ql-url">swayam.gov.in</small>
+      <i class="fas fa-arrow-right ql-arrow"></i>
+    </a>
+  </div>
+</section>
+
+<!-- LOGIN SECTION -->
+<section class="landing-section alt-bg" id="login-section">
+  <div class="section-header reveal">
+    <span class="section-number">06</span>
+    <div class="section-header-text">
+      <div class="section-title-row">
+        <h2>Complaint Management Portal</h2>
+      </div>
+      <p class="section-subtitle">Secure login &bull; Student access only</p>
+    </div>
+  </div>
+  <div class="auth-wrapper">
+    <div class="auth-card reveal-scale">
+      <div class="auth-header">
+        <div class="auth-icon">
+          <img src="{{ url_for('static', filename='images/qqgpt-logo.jpeg') }}" alt="QQGPT" class="auth-logo-img"/>
+        </div>
+        <h2>QQGPT — Student Login</h2>
+        <p>Sign in to manage your complaints</p>
+      </div>
+      {% if login_error %}
+      <div class="auth-login-error">
+        <i class="fas fa-exclamation-circle"></i> {{ login_error }}
+      </div>
+      {% endif %}
+      <form method="POST" action="{{ url_for('login') }}#login-section" class="auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+        <div class="form-group">
+          <label><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" name="email" placeholder="your@email.com" required autocomplete="email" value="{{ login_email or request.form.get('email', '') }}"/>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <div class="input-group">
+            <input type="password" name="password" id="loginPassword" placeholder="••••••••" required/>
+            <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="auth-inline-actions">
+            <a href="{{ url_for('forgot_password') }}" class="auth-inline-link"><i class="fas fa-key"></i> Forgot Password</a>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary btn-block">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+      </form>
+      <div class="auth-divider">
+        <span>or</span>
+      </div>
+      <div class="auth-anon-actions">
+        <a href="{{ url_for('anonymous_submit') }}" class="btn-anonymous btn-block">
+          <i class="fas fa-user-secret"></i> Submit Anonymous Complaint
+        </a>
+        <a href="{{ url_for('track_complaint') }}" class="btn-track btn-block">
+          <i class="fas fa-search"></i> Track Anonymous Complaint
+        </a>
+      </div>
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+         <p>Not registered? <a href="{{ url_for('public_feedback') }}">Share website feedback</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if keep_login_section %}
+<script>
+  window.addEventListener('load', function() {
+    const loginSection = document.getElementById('login-section');
+    if (loginSection) {
+      loginSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+</script>
+{% endif %}
+
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.querySelector('input[name="email"]');
+    if (emailInput && !emailInput.value) {
+      emailInput.focus();
+    }
+  });
+</script>
+
+{% endblock %}

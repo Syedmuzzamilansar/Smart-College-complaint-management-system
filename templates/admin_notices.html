@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notice Board — QQGPT Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* Header */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-size: 1.4rem; font-weight: 600; color: #f1f5f9; }
+    .back-btn { padding: 8px 18px; border-radius: 8px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: #94a3b8; font-size: 13px; text-decoration: none; transition: all .2s; }
+    .back-btn:hover { background: rgba(255,255,255,0.13); color: #f1f5f9; }
+
+    /* Flash messages */
+    .flash { padding: 10px 16px; border-radius: 10px; margin-bottom: 1rem; font-size: 13px; line-height: 1.5; }
+    .flash-success { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.3);  color: #86efac; }
+    .flash-danger  { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
+    .flash-warning { background: rgba(234,179,8,0.12);  border: 1px solid rgba(234,179,8,0.3);  color: #fde047; }
+    .flash-info    { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
+
+    /* Card */
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.6rem; margin-bottom: 1.6rem; }
+    .card-title { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; }
+
+    /* Form */
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 12px; font-weight: 500; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
+    .form-control { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #f1f5f9; font-size: 14px; font-family: inherit; outline: none; transition: border-color .2s; resize: vertical; }
+    .form-control:focus { border-color: rgba(99,179,237,0.55); }
+    textarea.form-control { min-height: 100px; }
+    .btn-post { padding: 10px 26px; background: #2563eb; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; transition: background .2s; }
+    .btn-post:hover { background: #1d4ed8; }
+
+    /* Notice list */
+    .notice-count { font-size: 13px; color: #64748b; margin-bottom: 1rem; }
+    .notice-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid #3b82f6; border-radius: 10px; padding: 1.1rem 1.3rem; margin-bottom: .8rem; transition: border-color .2s; }
+    .notice-item:hover { border-left-color: #60a5fa; }
+    .notice-title { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 6px; }
+    .notice-body { font-size: 13px; color: #94a3b8; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+    .notice-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .notice-date { font-size: 11px; color: #475569; }
+    .btn-del { padding: 5px 12px; background: rgba(239,68,68,0.13); border: 1px solid rgba(239,68,68,0.28); border-radius: 6px; color: #f87171; font-size: 12px; cursor: pointer; transition: background .2s; }
+    .btn-del:hover { background: rgba(239,68,68,0.25); }
+    .empty-state { text-align: center; padding: 2.5rem; color: #64748b; font-size: 14px; }
+    .empty-icon { font-size: 2.5rem; margin-bottom: .8rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <div class="page-title">📢 Notice Board — Admin</div>
+    <a href="{{ url_for('admin_dashboard') }}" class="back-btn">← Back to Dashboard</a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Post new notice -->
+  <div class="card">
+    <div class="card-title">📝 Post New Notice</div>
+    <form method="POST" action="{{ url_for('admin_notices') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="form-group">
+        <label class="form-label">Notice Title</label>
+        <input type="text" name="title" class="form-control" placeholder="e.g. Exam Schedule — June 2025" maxlength="200" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea name="body" class="form-control" placeholder="Write the full notice content here..." maxlength="2000" required></textarea>
+      </div>
+      <button type="submit" class="btn-post">Post Notice</button>
+    </form>
+  </div>
+
+  <!-- All existing notices -->
+  <div class="card">
+    <div class="card-title">📋 All Notices</div>
+    <div class="notice-count">{{ notices | length }} notice(s) posted</div>
+
+    {% if notices %}
+      {% for notice in notices %}
+      <div class="notice-item">
+        <div class="notice-title">{{ notice.title }}</div>
+        <div class="notice-body">{{ notice.body }}</div>
+        <div class="notice-footer">
+          <span class="notice-date">
+            📅 {{ notice.created_at.strftime('%d %b %Y at %I:%M %p') if notice.created_at else 'Date unknown' }}
+          </span>
+          <form method="POST" action="{{ url_for('delete_notice', notice_id=notice.id) }}"
+                style="display:inline"
+                onsubmit="return confirm('Delete this notice permanently?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit" class="btn-del">🗑 Delete</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div>No notices posted yet.<br>Use the form above to post your first notice.</div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>
