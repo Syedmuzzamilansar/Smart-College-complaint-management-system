@@ -65,7 +65,12 @@ def health_check() -> bool:
     # ── 2. Database connectivity ──────────────────────────────────────────────
     print('├' + '─' * 50 + '┤')
     db_ok = False
-    db_url = os.getenv('DATABASE_URL', '').strip()
+    db_url = ''
+    for key in ('DATABASE_URL', 'POSTGRES_URL', 'POSTGRESQL_URL', 'RENDER_DATABASE_URL', 'RENDER_POSTGRESQL_URL'):
+        value = (os.getenv(key) or '').strip()
+        if value:
+            db_url = value
+            break
     if db_url:
         if db_url.startswith('postgres://'):
             db_url = db_url.replace('postgres://', 'postgresql://', 1)
@@ -81,7 +86,8 @@ def health_check() -> bool:
             conn = psycopg2.connect(db_url, connect_timeout=8)
             cur  = conn.cursor()
             cur.execute('SELECT version()')
-            ver = cur.fetchone()[0].split(',')[0]
+            version_row = cur.fetchone() or ('unknown',)
+            ver = str(version_row[0]).split(',')[0]
             cur.close()
             conn.close()
             print(_banner(f'  ✓  DB connected  ({host})'))
