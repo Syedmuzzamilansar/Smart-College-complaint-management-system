@@ -39,7 +39,7 @@
 #         so the AI never loses earlier complaint details on long conversations.
 # ────────────────────────────────────────────────────────────────────────────
 
-from flask import Flask, render_template, request, redirect, session, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, session, url_for, flash, abort, send_from_directory
 import json
 import os
 import secrets
@@ -2159,6 +2159,11 @@ def index():
 @app.route('/favicon.ico')
 def favicon():
     return redirect(url_for('static', filename='images/qqgpt-logo.jpeg'))
+
+
+@app.route('/googleefb73d8c09f32ea4.html')
+def google_site_verification():
+    return send_from_directory(app.root_path, 'googleefb73d8c09f32ea4.html')
 
 
 # ── Register ──────────────────────────────────────────────────────────────────
